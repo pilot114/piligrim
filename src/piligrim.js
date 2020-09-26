@@ -1,10 +1,41 @@
-// TODO: последовательности клавиш (через пробел), запись последовательностей
 import hotkeys from 'hotkeys-js';
+
+function handleSequense(sequenses) {
+    let seq = [];
+    let skipClear = false;
+
+    hotkeys('*', (event) => {
+        if (event.key) {
+            seq.push(event.key);
+        }
+        skipClear = true;
+    });
+    // сброс последовательности по таймауту
+    setInterval(() => {
+        if (skipClear) {
+            skipClear = false;
+            return;
+        }
+        seq = [];
+    }, 500);
+    setInterval(() => {
+        let key = seq.join(' ');
+        if (sequenses[key]) {
+            sequenses[key]();
+            seq = [];
+        }
+    }, 100);
+}
 
 /**
  * Обработка всех событий клавиатуры и мыши
  */
-function handleInput(cbMove, cbPreview, cbWheel) {
+function handleInput(cbMove, cbPreview, cbWheel, cbClick, cbHover) {
+    handleSequense({
+        'i d d q d': () => {
+            console.log('oh my god');
+        }
+    });
 
     hotkeys('l', {keyup: true}, (event) => {
         if (event.type === 'keyup') {
@@ -13,10 +44,10 @@ function handleInput(cbMove, cbPreview, cbWheel) {
     });
 
     const mouseHandler = (event) => {
-        if (event.shiftKey) { console.log('shiftKey'); }
-        if (event.altKey) { console.log('altKey'); }
-        if (event.ctrlKey) { console.log('ctrlKey'); }
-        if (event.metaKey) { console.log('metaKey'); } // win key
+        // if (event.shiftKey) { console.log('shiftKey'); }
+        // if (event.altKey) { console.log('altKey'); }
+        // if (event.ctrlKey) { console.log('ctrlKey'); }
+        // if (event.metaKey) { console.log('metaKey'); } // win key
 
         if (event.type === 'wheel') {
             let direction = event.deltaY > 0;
@@ -33,6 +64,24 @@ function handleInput(cbMove, cbPreview, cbWheel) {
                 pageY: event.pageY,
             });
         }
+
+        if (event.type === 'click') {
+            cbClick({
+                // window
+                clientX: event.clientX,
+                clientY: event.clientY,
+                // document
+                pageX: event.pageX,
+                pageY: event.pageY,
+            });
+        }
+
+        if (event.type === 'mouseover') {
+            cbHover(true, event.target);
+        }
+        if (event.type === 'mouseout') {
+            cbHover(false, event.target);
+        }
     }
     window.onclick = mouseHandler;
     window.ondblclick = mouseHandler;
@@ -44,6 +93,17 @@ function handleInput(cbMove, cbPreview, cbWheel) {
     window.onwheel = mouseHandler;
 }
 
+/**
+ * Регистрация библиотеки компонентов
+ */
+let lib = {
+    'Input': () => import('./components/test/Input'),
+    'Select': () => import('./components/test/Select'),
+    'TextExample': () => import('./components/test/TextExample'),
+    'Area': () => import('./components/test/Area'),
+}
+
 export default {
-    handleInput
+    handleInput,
+    lib
 }

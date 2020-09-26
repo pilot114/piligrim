@@ -1,15 +1,24 @@
 <template>
     <div
+        id="preview"
+        v-if="coord"
         v-show="!isHidePreview"
         :style="{ left: (coord.pageX+20) + 'px', top: (coord.pageY+20) + 'px' }"
     >
         {{ currentComponent }}
+        <br>
+        <Render
+            :component="currentComponent"
+        />
     </div>
 </template>
 
 <script>
+import Render from './Render'
+
 export default {
     name: "Preview",
+    components: { Render },
     props: {
         isHidePreview: {
             type: Boolean,
@@ -21,11 +30,11 @@ export default {
         },
         // компоненты для отображения
         components: {
-            type: Object,
+            type: Array,
         }
     },
     created() {
-        this.currentComponent = this.cs[0];
+        this.currentComponent = this.components[0];
     },
     data() {
         return {
@@ -33,41 +42,33 @@ export default {
             currentComponentIndex: 0,
         }
     },
-    computed: {
-        cs() {
-            return Object.values(this.components);
-        },
-    },
     methods: {
         prevPreview() {
             if (this.currentComponentIndex === 0) {
-                this.currentComponentIndex = this.cs.length - 1;
+                this.currentComponentIndex = this.components.length - 1;
             } else {
                 this.currentComponentIndex--;
             }
-            this.currentComponent = this.cs[this.currentComponentIndex];
+            this.currentComponent = this.components[this.currentComponentIndex];
         },
         nextPreview() {
-            let arr = Object.values(this.components);
-            if (this.currentComponentIndex === (this.cs.length - 1)) {
+            if (this.currentComponentIndex === (this.components.length - 1)) {
                 this.currentComponentIndex = 0;
             } else {
                 this.currentComponentIndex++;
             }
-            this.currentComponent = this.cs[this.currentComponentIndex];
+            this.currentComponent = this.components[this.currentComponentIndex];
         }
     }
 }
-
 </script>
 
 <style scoped>
-    div {
-        position: absolute;
+    #preview {
+        position: fixed;
         width: 200px;
-        height: 100px;
         padding: 10px;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.1);
         font-family: Calibri, sans-serif;
     }
 </style>
