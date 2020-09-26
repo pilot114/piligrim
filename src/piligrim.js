@@ -37,7 +37,7 @@ function handleInput(cbMove, cbPreview, cbWheel, cbClick, cbHover) {
         }
     });
 
-    hotkeys('l', {keyup: true}, (event) => {
+    hotkeys('l,esc', {keyup: true}, (event) => {
         if (event.type === 'keyup') {
             cbPreview();
         }
@@ -96,12 +96,9 @@ function handleInput(cbMove, cbPreview, cbWheel, cbClick, cbHover) {
 /**
  * Регистрация библиотеки компонентов
  */
-let lib = {
-    'Input': () => import('./components/test/Input'),
-    'Select': () => import('./components/test/Select'),
-    'TextExample': () => import('./components/test/TextExample'),
-    'Area': () => import('./components/test/Area'),
-}
+import * as test from './components/test';
+import * as form from './components/test/form';
+let lib = {...test, ...form}
 
 export default {
     handleInput,

@@ -6,6 +6,7 @@
         <Area/>
         <Area/>
         <TextExample/>
+        <Container/>
         <Area/>
         <Area/>
 
@@ -68,25 +69,23 @@ export default {
                 }
 
                 let name = this.$refs.preview._data.currentComponent;
-                Piligrim.lib[name]().then(module => {
-                    let ComponentClass = Vue.extend(module.default);
 
-                    // TODO: настройки компонента
-                    let instance = new ComponentClass({
-                        // пропсы
-                        propsData: { type: 'primary' }
-                    });
-                    // слоты
-                    instance.$slots.default = [ 'Click me!' ];
-                    instance.$mount();
+                let ComponentClass = Vue.extend(Piligrim.lib[name]);
 
-                    if (parent) {
-                        console.log(parent);
-                        parent.insertBefore(instance.$el, el.nextSibling);
-                    } else {
-                        el.appendChild(instance.$el);
-                    }
-                })
+                // TODO: настройки компонента
+                let instance = new ComponentClass({
+                    // пропсы
+                    propsData: { type: 'primary' }
+                });
+                // слоты
+                instance.$slots.default = [ 'Click me!' ];
+                instance.$mount();
+
+                if (parent) {
+                    parent.insertBefore(instance.$el, el.nextSibling);
+                } else {
+                    el.appendChild(instance.$el);
+                }
             },
             // hover
             (direction, el) => {
@@ -114,7 +113,6 @@ export default {
 <style>
 #app {
     font-family: Calibri, sans-serif;
-    text-align: center;
-    margin-top: 60px;
+    margin: 60px 20px;
 }
 </style>
