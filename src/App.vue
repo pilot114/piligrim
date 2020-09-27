@@ -1,14 +1,6 @@
 <template>
     <div id="app">
-        <Input/>
-        <Select/>
-        <TextExample/>
-        <Area/>
-        <Area/>
-        <TextExample/>
-        <Container/>
-        <Area/>
-        <Area/>
+        <ElementExample/>
 
         <Preview
             :isHidePreview="isHidePreview"
@@ -22,14 +14,14 @@
 
 <script>
 
-
 import Preview from './components/Preview.vue'
 import Piligrim from './piligrim'
-import Vue from 'vue'
+import ElementExample from "./components/ElementExample";
 
 export default {
     name: 'App',
     components: {
+        ElementExample,
         ...Piligrim.lib, Preview
     },
     computed: {
@@ -43,9 +35,13 @@ export default {
             (coords) => {
                 this.coords = coords;
             },
-            // p
-            () => {
-                this.isHidePreview = !this.isHidePreview;
+            // p, esc
+            (disable) => {
+                if (disable) {
+                    this.isHidePreview = true;
+                } else {
+                    this.isHidePreview = !this.isHidePreview;
+                }
             },
             // wheel
             (direction) => {
@@ -70,17 +66,7 @@ export default {
 
                 let name = this.$refs.preview._data.currentComponent;
 
-                let ComponentClass = Vue.extend(Piligrim.lib[name]);
-
-                // TODO: настройки компонента
-                let instance = new ComponentClass({
-                    // пропсы
-                    propsData: { type: 'primary' }
-                });
-                // слоты
-                instance.$slots.default = [ 'Click me!' ];
-                instance.$mount();
-
+                let instance = Piligrim.createInstanse(name);
                 if (parent) {
                     parent.insertBefore(instance.$el, el.nextSibling);
                 } else {

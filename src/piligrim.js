@@ -39,7 +39,11 @@ function handleInput(cbMove, cbPreview, cbWheel, cbClick, cbHover) {
 
     hotkeys('l,esc', {keyup: true}, (event) => {
         if (event.type === 'keyup') {
-            cbPreview();
+            if (event.key === 'Escape') {
+                cbPreview(true);
+            } else {
+                cbPreview();
+            }
         }
     });
 
@@ -93,6 +97,19 @@ function handleInput(cbMove, cbPreview, cbWheel, cbClick, cbHover) {
     window.onwheel = mouseHandler;
 }
 
+// TODO: настройки компонента
+function createInstanse(name, props, slots) {
+    let ComponentClass = Vue.extend(lib[name]);
+    let instance = new ComponentClass({
+        // пропсы
+        propsData: {type: 'primary'}
+    });
+    // слоты
+    instance.$slots.default = ['Click me!'];
+    instance.$mount();
+    return instance;
+}
+
 /**
  * Регистрация библиотеки компонентов
  */
@@ -100,7 +117,24 @@ import * as test from './components/test';
 import * as form from './components/test/form';
 let lib = {...test, ...form}
 
+/**
+ * Пример регистрации element-ui
+ */
+import Vue from 'vue'
+import Element from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import lang from 'element-ui/lib/locale/lang/en'
+Vue.use(Element)
+import locale from 'element-ui/lib/locale'
+locale.use(lang)
+
+for (const [key, value] of Object.entries(Element)) {
+    if (key[0] != key[0].toUpperCase()) continue;
+    lib['Element-' + key] = value;
+}
+
 export default {
     handleInput,
-    lib
+    lib,
+    createInstanse
 }
